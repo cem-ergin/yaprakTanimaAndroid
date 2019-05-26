@@ -1,70 +1,114 @@
 package com.onur.myapplication;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfFloat;
+import org.opencv.core.MatOfInt;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Helper3 {
 
+    FileWriter writer = new FileWriter("/storage/emulated/0/dusukcozunurluk.txt");
 
     float[] dizi = new float[1910];
     public Helper3() throws IOException {
 
 
-                String path = Environment.getExternalStorageDirectory().toString()+"/yaprakornek";
-                Log.d("Files", "Path: " + path);
-                System.out.println("yol==="+path);
-                File directory = new File(path);
-                File[] files = directory.listFiles();
-                System.out.println("directory = "+directory);
-                Log.d("Files", "Size: "+ files.length);
-                for (int i = 0; i < files.length; i++)
-                {
+        String path = Environment.getExternalStorageDirectory().toString()+"/yaprakornek";
+        Log.d("Files", "Path: " + path);
+        System.out.println("yol==="+path);
+        File directory = new File(path);
+        File[] files = directory.listFiles();
+        System.out.println("directory = "+directory);
+        Log.d("Files", "Size: "+ files.length);
+        for (int i = 0; i < files.length; i++)
+        {
 
-                    Log.d("Files", "FileName:" + files[i].getName());
+            Log.d("Files", "FileName:" + files[i].getName());
 
-                    Mat frame = Imgcodecs.imread(files[i].getPath(), 1);
-                    Mat grayImage = new Mat();
-                    Imgproc.cvtColor(frame, grayImage, Imgproc.COLOR_BGR2GRAY);
+            Mat frame = Imgcodecs.imread(files[i].getPath(), 1);
+            Mat grayImage = new Mat();
+            Imgproc.cvtColor(frame, grayImage, Imgproc.COLOR_BGR2GRAY);
 
-                    grayImage.convertTo(grayImage, CvType.CV_8U);
-                    if(Imgcodecs.imwrite("/storage/emulated/0/detectedGrayImage.jpg", grayImage))
-                    {
-                        System.out.println(i+".edge is detected .......");
-                    }
+            grayImage.convertTo(grayImage, CvType.CV_8U);
+            if(Imgcodecs.imwrite("/storage/emulated/0/detectedGrayImage.jpg", grayImage))
+            {
+                System.out.println(i+".edge is detected .......");
+            }
 
-                    Bitmap bmp = null;
+            Bitmap bmp = null;
 
-                    Imgproc.cvtColor(frame, grayImage, Imgproc.COLOR_RGB2BGRA);
-                    bmp = Bitmap.createBitmap(grayImage.cols(), grayImage.rows(), Bitmap.Config.ARGB_8888);
-                    Utils.matToBitmap(grayImage, bmp);
+            Imgproc.cvtColor(frame, grayImage, Imgproc.COLOR_RGB2BGRA);
+            bmp = Bitmap.createBitmap(grayImage.cols(), grayImage.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(grayImage, bmp);
 
+            Bitmap bm = getResizedBitmap(bmp,180,90);
+            //Bitmap bm = ShrinkBitmap(/storage/emulated/0/Podcasts/1001.jpg, 640, 480);
 
-                    histogramLbp(bmp,i);
-                }
+            histogramLbp(bm,i,files[i].getName());
+        }
 
-                for (int i=0 ; i<dizi.length ; i++){
-                    System.out.println(i+". değer = "+dizi[i]);
+        for (int i=0 ; i<dizi.length ; i++){
+            System.out.println(i+". değer = "+dizi[i]);
 
-                }
+        }
 
 
 
     }
+
+    public Bitmap getResizedBitmap(Bitmap image, int maxSizeW, int maxSizeH) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSizeW;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSizeH;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
+
+    Bitmap ShrinkBitmap(String file, int width, int height){
+
+        BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+        bmpFactoryOptions.inJustDecodeBounds = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(file, bmpFactoryOptions);
+
+        int heightRatio = (int)Math.ceil(bmpFactoryOptions.outHeight/(float)height);
+        int widthRatio = (int)Math.ceil(bmpFactoryOptions.outWidth/(float)width);
+
+        if (heightRatio > 1 || widthRatio > 1)
+        {
+            if (heightRatio > widthRatio)
+            {
+                bmpFactoryOptions.inSampleSize = heightRatio;
+            } else {
+                bmpFactoryOptions.inSampleSize = widthRatio;
+            }
+        }
+
+        bmpFactoryOptions.inJustDecodeBounds = false;
+        bitmap = BitmapFactory.decodeFile(file, bmpFactoryOptions);
+        return bitmap;
+    }
+
 
     public int getPixel(Bitmap img,int center,int x , int y){
 
@@ -79,7 +123,7 @@ public class Helper3 {
 
 
     }
-    public double lbpCalculatedPixel(Bitmap img,int x, int y){
+    public int lbpCalculatedPixel(Bitmap img,int x, int y){
 
         int center = img.getPixel(x,y);
 
@@ -97,7 +141,7 @@ public class Helper3 {
 
         int[] power_val = {1,2,4,8,16,32,64,128};
 
-        double value = 0;
+        int value = 0;
 
         for (int i = 0 ; i <val_ar.size();i++){
 
@@ -110,15 +154,16 @@ public class Helper3 {
 
 
 
-    public void histogramLbp(Bitmap grayImg,int sayac) throws IOException {
+    public void histogramLbp(Bitmap grayImg,int sayac, String isim) throws IOException {
 
 
-        Mat img_lbp  = new Mat();
-        Utils.bitmapToMat(grayImg, img_lbp);
+        Mat img_lbp  = new Mat(grayImg.getWidth(),grayImg.getHeight(),CvType.CV_8UC1);
+        //Utils.bitmapToMat(grayImg, img_lbp);
 
-        Imgproc.cvtColor(img_lbp, img_lbp, Imgproc.COLOR_RGB2BGRA);
+//        Imgproc.cvtColor(img_lbp, img_lbp, Imgproc.COLOR_RGB2BGRA);
+        //Imgproc.cvtColor(img_lbp, img_lbp, Imgproc.COLOR_BGR2HSV);
 
-        double [][] asd = new double[grayImg.getWidth()][grayImg.getHeight()];
+        int [][] asd = new int[grayImg.getWidth()][grayImg.getHeight()];
 
         float toplam = 0;
         System.out.println("toplam = " + toplam);
@@ -127,40 +172,63 @@ public class Helper3 {
 
             for (int j = 0; j < grayImg.getHeight(); j++) {
                 asd[i][j] = lbpCalculatedPixel(grayImg,i,j);
-                toplam += asd[i][j]/(grayImg.getHeight()*grayImg.getWidth());
-
-                //img_lbp.put(i,j,lbpCalculatedPixel(grayImg,i,j));
-                //img_lbp.put(i,j,asd[i][j]);
+                img_lbp.put(i,j,asd[i][j]);
 
             }
-            System.out.println("toplam = " + toplam);
+
+            System.out.println("işlem yapılan resim: "+isim);
+            System.out.println((1907-sayac)+"RESIM KALDI");
 
         }
+
+
+
+
+//        hist_lbp = Imgproc.calcHist(img_lbp, , None, [256], [0, 256])
+        List<Mat> bgrPlanes = new ArrayList<>();
+        bgrPlanes.add(img_lbp);
+        Mat hist_lbp = new Mat();
+        float[] range = {0, 256}; //the upper boundary is exclusive
+        MatOfFloat histRange = new MatOfFloat(range);
+
+
+
+        Imgproc.calcHist(bgrPlanes,new MatOfInt(0),new Mat(),hist_lbp,new MatOfInt(256),histRange);
+
+
+
+        System.out.println(hist_lbp.dump());
+
+        double[] histogram = new double[256];
+        for(int i = 0 ; i < 256; i++){
+            //System.out.print(hist_lbp.get(i,0)[0] + ",");
+            histogram[i] = hist_lbp.get(i,0)[0];
+        }
+        /*for(int i = 0 ; i < 256; i++){
+            System.out.print(histogram[i] + ",");
+        }*/
+
 
 
         System.out.println("toplam son = " + toplam);
         dizi[sayac] = toplam;
-        if (sayac == 1905){
-            // Open the file
-            FileInputStream fstream = new FileInputStream("/storage/emulated/0/deneme.txt");
-            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-            FileWriter writer = new FileWriter("/storage/emulated/0/yeni.txt");
-            String strLine;
 
-            //Read File Line By Line
-            int sayac2=0;
-            while ((strLine = br.readLine()) != null)   {
-                writer.write(dizi[sayac2]+",");
-                writer.write(strLine);
-                writer.write(System.getProperty( "line.separator" ));
-                sayac2++;
+        for (int i = 0; i <256 ; i++) {
+            if(i==255){
+                writer.write(Double.toString(histogram[i]));
+                writer.write(","+isim);
+                break;
             }
-
-            //Close the input stream
-            fstream.close();
-            writer.close();
+            writer.write(histogram[i]+",");
         }
+        writer.write(System.getProperty( "line.separator" ));
+
+        if(sayac==1906)
+        writer.close();
+
 
     }
 
 }
+
+

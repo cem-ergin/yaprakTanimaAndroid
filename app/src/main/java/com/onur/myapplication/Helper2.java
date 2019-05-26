@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Log;
-import android.widget.TextView;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -16,16 +15,12 @@ import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.io.Writer;
-import java.util.Arrays;
 
 /**
  * Created by onur on 9.08.2018.
@@ -33,7 +28,7 @@ import java.util.Arrays;
 
 public class Helper2 {
 
-        public Helper2(String path, Activity activity, String name){
+    public Helper2(String path, Activity activity, String name){
         Mat frame = Imgcodecs.imread(path, 1);
         Mat grayImage = new Mat();
 //        Mat detectedEdges = new Mat();
@@ -111,23 +106,23 @@ public class Helper2 {
             System.out.println("edge is detected .......");
         }
 
-            Mat detectedEdges = new Mat();
+        Mat detectedEdges = new Mat();
 
 
-            Core.add(canny, Scalar.all(0), canny);
-            frame = canny;
-            frame.copyTo(canny, detectedEdges);
-            Imgproc.blur(frame, frame, new Size(5, 5));
-            Imgproc.dilate(frame, frame, new Mat(), new Point(-1, -1), 1);
-            Imgproc.erode(frame, frame, new Mat(), new Point(-1, -1), 3);
-            //Imgproc.threshold(frame, frame, 100, 200, Imgproc.THRESH_BINARY);
-            Imgproc.Canny(frame, detectedEdges, 50,150,3, false);
+        Core.add(canny, Scalar.all(0), canny);
+        frame = canny;
+        frame.copyTo(canny, detectedEdges);
+        Imgproc.blur(frame, frame, new Size(5, 5));
+        Imgproc.dilate(frame, frame, new Mat(), new Point(-1, -1), 1);
+        Imgproc.erode(frame, frame, new Mat(), new Point(-1, -1), 3);
+        //Imgproc.threshold(frame, frame, 100, 200, Imgproc.THRESH_BINARY);
+        Imgproc.Canny(frame, detectedEdges, 50,150,3, false);
 
-            detectedEdges.convertTo(detectedEdges,CvType.CV_8U);
-            if(Imgcodecs.imwrite("/storage/emulated/0/detectedEdges.jpg", detectedEdges))
-            {
-                System.out.println("edge is detected .......");
-            }
+        detectedEdges.convertTo(detectedEdges,CvType.CV_8U);
+        if(Imgcodecs.imwrite("/storage/emulated/0/detectedEdges.jpg", detectedEdges))
+        {
+            System.out.println("edge is detected .......");
+        }
 
 
         int x1=100000;
@@ -145,8 +140,8 @@ public class Helper2 {
         int cevreSayac = 0 ;
         int alanSayac = 0;
         float uzaklikX = 0;
-            float uzaklikY = 0;
-            float Cx = 0 , Cy = 0 ;
+        float uzaklikY = 0;
+        float Cx = 0 , Cy = 0 ;
 
 
         for(int i = 0 ; i < bMapEdge.getWidth(); i ++){
@@ -178,131 +173,131 @@ public class Helper2 {
         Cy = (Cy)/(float)(alanSayac);
         System.out.println("cx = " + Cx + " Cy = " + Cy);
 
-            float minX = 10000;
-            float maxX=0;
-            float maxUzalik = 0;
-            float X1 = 0;
-            float X2 = 0;
+        float minX = 10000;
+        float maxX=0;
+        float maxUzalik = 0;
+        float X1 = 0;
+        float X2 = 0;
 
-            for (int j = 0; j < bMapEdge.getHeight(); j++) {
-                minX = 10000;
-                maxX=0;
-
-
-                for (int i = 0; i < bMapEdge.getWidth(); i++) {
-                    if (Color.red(bMapEdge.getPixel(i, j)) > 0) {
-
-                        if(i<minX) {
-                            minX = i;
-                        }
-                        if(maxX<i) {
-                            maxX=i;
-                        }
-                        uzaklikX = (float) Math.sqrt((Math.pow((maxX - minX), 2)));
-                        if(uzaklikX>maxUzalik){
-                            maxUzalik = uzaklikX;
-                            X1 = minX;
-                            X2 = maxX;
-
-                        }
-
-                    }
-                }
-            }
-
-            uzaklikX = (float) Math.sqrt((Math.pow((X2 - X1), 2)));
-            System.out.println("X uzakligi " +uzaklikX + "-------- " + X2 + " ----------" + X1);
-
-
-            float minY = 10000;
-            float maxY = 0;
-            float maxUzalikY = 0;
-            float Y1 = 0;
-            float Y2 = 0;
-
-            for (int j = 0; j < bMapEdge.getWidth(); j++) {
-                minY = 10000;
-                maxY = 0;
-
-
-                for (int i = 0; i < bMapEdge.getHeight(); i++) {
-                    if (Color.red(bMapEdge.getPixel(j, i)) > 0) {
-
-                        if(i<minY) {
-                            minY = i;
-                        }
-                        if(maxY<i) {
-                            maxY=i;
-                        }
-                        uzaklikY = (float) Math.sqrt((Math.pow((maxY - minY), 2)));
-                        if(uzaklikY>maxUzalikY){
-                            maxUzalikY = uzaklikY;
-
-                            Y1 = minY;
-                            Y2 = maxY;
-
-                        }
-
-                    }
-                }
-            }
-
-
-            uzaklikY = (float) Math.sqrt((Math.pow((Y2 - Y1), 2)));
-            System.out.println("Y uzakligi "+uzaklikY + "-------- " + Y2 + " ----------" + Y1);
-
-            float Cap = (float) Math.sqrt((Math.pow(uzaklikX, 2))+(Math.pow(uzaklikY, 2)));
-
-            System.out.println("Cap = " + Cap);
-
-
-
-            float Amax =0,Amin=10000,tmpUzaklik=0;
-            float toplamAgrilikX = 0,toplamAgrilikY=0;
+        for (int j = 0; j < bMapEdge.getHeight(); j++) {
+            minX = 10000;
+            maxX=0;
 
 
             for (int i = 0; i < bMapEdge.getWidth(); i++) {
-                for (int j = 0; j < bMapEdge.getHeight(); j++) {
-                    if (Color.red(bMapEdge.getPixel(i, j)) > 0) {
-                        toplamAgrilikX += i;
-                        toplamAgrilikY += j;
+                if (Color.red(bMapEdge.getPixel(i, j)) > 0) {
+
+                    if(i<minX) {
+                        minX = i;
                     }
+                    if(maxX<i) {
+                        maxX=i;
+                    }
+                    uzaklikX = (float) Math.sqrt((Math.pow((maxX - minX), 2)));
+                    if(uzaklikX>maxUzalik){
+                        maxUzalik = uzaklikX;
+                        X1 = minX;
+                        X2 = maxX;
+
+                    }
+
                 }
             }
+        }
 
-            toplamAgrilikX = toplamAgrilikX/cevreSayac;
-            toplamAgrilikY = toplamAgrilikY/cevreSayac;
+        uzaklikX = (float) Math.sqrt((Math.pow((X2 - X1), 2)));
+        System.out.println("X uzakligi " +uzaklikX + "-------- " + X2 + " ----------" + X1);
 
-            System.out.println("Merkez X,Y = " + toplamAgrilikX + " ---- " + toplamAgrilikY);
-            //
+
+        float minY = 10000;
+        float maxY = 0;
+        float maxUzalikY = 0;
+        float Y1 = 0;
+        float Y2 = 0;
+
+        for (int j = 0; j < bMapEdge.getWidth(); j++) {
+            minY = 10000;
+            maxY = 0;
+
+
+            for (int i = 0; i < bMapEdge.getHeight(); i++) {
+                if (Color.red(bMapEdge.getPixel(j, i)) > 0) {
+
+                    if(i<minY) {
+                        minY = i;
+                    }
+                    if(maxY<i) {
+                        maxY=i;
+                    }
+                    uzaklikY = (float) Math.sqrt((Math.pow((maxY - minY), 2)));
+                    if(uzaklikY>maxUzalikY){
+                        maxUzalikY = uzaklikY;
+
+                        Y1 = minY;
+                        Y2 = maxY;
+
+                    }
+
+                }
+            }
+        }
+
+
+        uzaklikY = (float) Math.sqrt((Math.pow((Y2 - Y1), 2)));
+        System.out.println("Y uzakligi "+uzaklikY + "-------- " + Y2 + " ----------" + Y1);
+
+        float Cap = (float) Math.sqrt((Math.pow(uzaklikX, 2))+(Math.pow(uzaklikY, 2)));
+
+        System.out.println("Cap = " + Cap);
+
+
+
+        float Amax =0,Amin=10000,tmpUzaklik=0;
+        float toplamAgrilikX = 0,toplamAgrilikY=0;
+
+
+        for (int i = 0; i < bMapEdge.getWidth(); i++) {
+            for (int j = 0; j < bMapEdge.getHeight(); j++) {
+                if (Color.red(bMapEdge.getPixel(i, j)) > 0) {
+                    toplamAgrilikX += i;
+                    toplamAgrilikY += j;
+                }
+            }
+        }
+
+        toplamAgrilikX = toplamAgrilikX/cevreSayac;
+        toplamAgrilikY = toplamAgrilikY/cevreSayac;
+
+        System.out.println("Merkez X,Y = " + toplamAgrilikX + " ---- " + toplamAgrilikY);
+        //
 //            for x in range(len(cevreNoktalari)):
 //            uzaklik = uzaklik + sqrt(((cevreNoktalari[x][1] - Cx) ** 2) + ((cevreNoktalari[x][0] - Cy) ** 2))
 //
 //            CortalamaUzaklik = uzaklik / len(cevreNoktalari)
 
 
-            for (int i = 0; i < bMapEdge.getWidth(); i++) {
-                for (int j = 0; j < bMapEdge.getHeight(); j++) {
-                    if (Color.red(bMapEdge.getPixel(i, j)) > 0) {
-                        tmpUzaklik = (float) Math.sqrt((Math.pow(i-toplamAgrilikX, 2))+(Math.pow(j-toplamAgrilikY, 2)));
-                        if (Amax < tmpUzaklik) {
-                            Amax = tmpUzaklik;
-                        }
-                        if (Amin > tmpUzaklik) {
-                            Amin = tmpUzaklik;
-                        }
+        for (int i = 0; i < bMapEdge.getWidth(); i++) {
+            for (int j = 0; j < bMapEdge.getHeight(); j++) {
+                if (Color.red(bMapEdge.getPixel(i, j)) > 0) {
+                    tmpUzaklik = (float) Math.sqrt((Math.pow(i-toplamAgrilikX, 2))+(Math.pow(j-toplamAgrilikY, 2)));
+                    if (Amax < tmpUzaklik) {
+                        Amax = tmpUzaklik;
+                    }
+                    if (Amin > tmpUzaklik) {
+                        Amin = tmpUzaklik;
                     }
                 }
             }
+        }
 
-            tmpUzaklik = tmpUzaklik/cevreSayac;
+        tmpUzaklik = tmpUzaklik/cevreSayac;
 
-            System.out.println(" Agirlik merkezine ortalama uzaklik = "  + tmpUzaklik );
+        System.out.println(" Agirlik merkezine ortalama uzaklik = "  + tmpUzaklik );
 
 
-            System.out.println("Amax = " + Amax + "Amin = " + Amin);
+        System.out.println("Amax = " + Amax + "Amin = " + Amin);
 
-            System.out.println("Cap/Amax+Amin = " +  (Cap/(Amax+Amin)) );
+        System.out.println("Cap/Amax+Amin = " +  (Cap/(Amax+Amin)) );
 
 
 
@@ -318,17 +313,17 @@ public class Helper2 {
 //    #    print("CAP NOKTALARININ AGIRLIK MERKEZINE UZAKLIGINN ORANI = ", ozellik9)
 
 
-            float ozellik9 = (float) (Math.sqrt((Math.pow((X2-toplamAgrilikX), 2))+(Math.pow(Y2-toplamAgrilikY, 2))))/(float)(Math.sqrt((Math.pow((X1-toplamAgrilikX), 2))+(Math.pow(Y1-toplamAgrilikY, 2))));
-            float ozellik91 = (float) (Math.sqrt((Math.pow((X1-toplamAgrilikX), 2))+(Math.pow(Y1-toplamAgrilikY, 2))))/(float)(Math.sqrt((Math.pow((X2-toplamAgrilikX), 2))+(Math.pow(Y2-toplamAgrilikY, 2))));
+        float ozellik9 = (float) (Math.sqrt((Math.pow((X2-toplamAgrilikX), 2))+(Math.pow(Y2-toplamAgrilikY, 2))))/(float)(Math.sqrt((Math.pow((X1-toplamAgrilikX), 2))+(Math.pow(Y1-toplamAgrilikY, 2))));
+        float ozellik91 = (float) (Math.sqrt((Math.pow((X1-toplamAgrilikX), 2))+(Math.pow(Y1-toplamAgrilikY, 2))))/(float)(Math.sqrt((Math.pow((X2-toplamAgrilikX), 2))+(Math.pow(Y2-toplamAgrilikY, 2))));
 
 
-            if(ozellik91 >= ozellik9){
-                ozellik9 = ozellik91;
-            }
+        if(ozellik91 >= ozellik9){
+            ozellik9 = ozellik91;
+        }
 
-            System.out.println("En uzak iki noktanin agirlik merkezine uzakliginin orani = " + ozellik9);
+        System.out.println("En uzak iki noktanin agirlik merkezine uzakliginin orani = " + ozellik9);
 
-            System.out.println(bMap.getHeight());
+        System.out.println(bMap.getHeight());
         System.out.println(bMap.getWidth());
         System.out.println("cevre pixel sayisi = " + cevreSayac);
         System.out.println("alan pixel sayisi = " + alanSayac);
@@ -341,28 +336,28 @@ public class Helper2 {
         System.out.println("dis alan / ic alan = " + (((float)(x2-x1)*(float)(y2-y1))-(float)alanSayac)/(float)alanSayac);
 
         String sonuc =
-                 (float)(y2-y1)/(float)(x2-x1) + "," +
-                ((float)cevreSayac/((float)(y2-y1)+(float)(x2-x1))) + "," +
-                 ((float)alanSayac/((float)(y2-y1)*(float)(x2-x1)))+ "," +
+                (float)(y2-y1)/(float)(x2-x1) + "," +
+                        ((float)cevreSayac/((float)(y2-y1)+(float)(x2-x1))) + "," +
+                        ((float)alanSayac/((float)(y2-y1)*(float)(x2-x1)))+ "," +
 //                 (((float)(x2-x1)*(float)(y2-y1))-(float)alanSayac)/(float)alanSayac + ","+
-                         ozellik9 + ","+
-                         (Cap/(Amax+Amin)) +","+name +".jpg" ;
+                        ozellik9 + ","+
+                        (Cap/(Amax+Amin)) +","+name +".jpg" ;
 
 
-            File file = new File("/storage/emulated/0/deneme.txt");
-            if(!file.exists())
-            {
-                try {
-                    file.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                // write code for saving data to the file
+        File file = new File("/storage/emulated/0/deneme.txt");
+        if(!file.exists())
+        {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            // write code for saving data to the file
+        }
 
-            appendStringToFile(sonuc+"\n" , file);
+        appendStringToFile(sonuc+"\n" , file);
 
-            //System.out.println("cevre ortalama uzaklik = " + CortalamaUzaklik);
+        //System.out.println("cevre ortalama uzaklik = " + CortalamaUzaklik);
 
 
 //            String[] parse = sonuc.split(",");
@@ -434,7 +429,7 @@ public class Helper2 {
 //            text.setText(textSonuc);
 
 
-        }
+    }
 
     public static int findIndex(float arr[], float t)
     {
@@ -465,16 +460,18 @@ public class Helper2 {
 
     public void appendStringToFile(final String appendContents, final File file) {
         try {
-                if (file != null && file.canWrite()) {
-                    file.createNewFile(); // ok if returns false, overwrite
-                    Writer out = new BufferedWriter(new FileWriter(file, true), 1024);
-                    out.write(appendContents);
-                    out.close();
-                }
+            if (file != null && file.canWrite()) {
+                file.createNewFile(); // ok if returns false, overwrite
+                Writer out = new BufferedWriter(new FileWriter(file, true), 1024);
+                out.write(appendContents);
+                out.close();
+            }
 
         } catch (IOException e) {
-               Log.e("fos error", "Error appending string data to file " + e.getMessage(), e);
+            Log.e("fos error", "Error appending string data to file " + e.getMessage(), e);
         }
     }
 
 }
+
+

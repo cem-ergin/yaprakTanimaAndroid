@@ -224,16 +224,17 @@ public class MainActivity extends AppCompatActivity {
                     ArrayList<String> allImages = new ArrayList<>();
                     ArrayList<String> testImages = new ArrayList<>();
                     ArrayList<String> trainImages = new ArrayList<>();
-                    float[] maxOzellik= new float[]{0, 0, 0, 0, 0};
+                    float[] maxOzellik= new float[256];
 
 
-                    try(BufferedReader br = new BufferedReader(new FileReader("/storage/emulated/0/deneme.txt"))) {
-
+                    try(BufferedReader br = new BufferedReader(new FileReader("/storage/emulated/0/dusukcozunurluklbpson.txt"))) {
+                        int sayac=0;
                         for(String line; (line = br.readLine()) != null; ) {
                             allImages.add(line);
                             trainImages.add(line);
                             String[] maxParse = line.split(",");
-                            for(int i = 0;i<5;i++){
+                            System.out.println("aha bu maxparse sayısı :"+maxParse.length);
+                            for(int i = 0;i<256;i++){
                                 if(maxOzellik[i]<Float.parseFloat(maxParse[i])){
                                     maxOzellik[i] = Float.parseFloat(maxParse[i]);
                                 }
@@ -282,10 +283,10 @@ public class MainActivity extends AppCompatActivity {
                             System.out.println("index = " + findIndex(uzakliklar,uzakliklar2[i]));
                             System.out.println("line = " +trainImages.get(findIndex(uzakliklar,uzakliklar2[i])));
                             String[] parseSonuc = trainImages.get(findIndex(uzakliklar,uzakliklar2[i])).split(",");
-                            String[] parseSonuc2 = parseSonuc[5].split("\\.");
+                            String[] parseSonuc2 = parseSonuc[256].split("\\.");
                             siniflandirmaSonuc[i] = Integer.parseInt(parseSonuc2[0]);
                         }
-                        String[] siniflandirmaImage = parse[5].split("\\.");
+                        String[] siniflandirmaImage = parse[256].split("\\.");
                         int siniflandirmaResim = Integer.parseInt(siniflandirmaImage[0]);
                         if(siniflandirmaKontrol(siniflandirmaResim,siniflandirmaSonuc)==1){
                             dogruSayisi++;
@@ -297,14 +298,14 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("================================================================");
 
                     }
-                    float accuracy = (float)(TP+FP)/(TP+TN+FP+FN);
-                    float presicion = (float)(TP)/(TP+FP);
-                    float recall = (float)(TP)/(TP+FN);
-                    float fScore = (float)(2*presicion*recall)/(presicion+recall);
+                    //float accuracy = (float)(TP+FP)/(TP+TN+FP+FN);
+                    //float presicion = (float)(TP)/(TP+FP);
+                    //float recall = (float)(TP)/(TP+FN);
+                    //float fScore = (float)(2*presicion*recall)/(presicion+recall);
                     System.out.println("Doğruluk Oranı = " +(float)(((float)dogruSayisi/(float)testImages.size())*100));
 
                     TextView title = findViewById(R.id.title);
-                    title.setText("Doğruluk Oranı = " + (float)(((float)dogruSayisi/(float)testImages.size())*100) +"\nTP ="+TP+" FP ="+FP+" FN ="+FN+" TN ="+TN+"\nPresicion = "+presicion+"\nRecall = "+recall+"\nF-Score = "+fScore+"\nAccucary = "+accuracy);
+                    title.setText("Doğruluk Oranı = " + (float)(((float)dogruSayisi/(float)testImages.size())*100));
                     TextView first = findViewById(R.id.first);
                     first.setText("Test Kümesindeki Veri Sayısı = " + (dogruSayisi + yanlisSayisi) +"\nDogru Sınıflandırma Sayısı = " + dogruSayisi +"\nYanlış Sınıflandırma Sayısı = " + yanlisSayisi);
                     title.setVisibility(View.VISIBLE);
@@ -327,6 +328,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+
 
 
 //        egitim.setOnClickListener(new View.OnClickListener() {
@@ -354,10 +357,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    int TP = 0;
-    int TN = 0;
-    int FP = 0;
-    int FN = 0;
     public int siniflandirmaKontrol(int line, int[] uzunluklar){
         float puan = 0;
 
@@ -367,10 +366,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -385,10 +380,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -403,10 +394,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -421,10 +408,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -439,10 +422,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -457,10 +436,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -475,10 +450,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -493,10 +464,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -511,10 +478,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -529,10 +492,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -547,10 +506,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -565,10 +520,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -583,10 +534,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -601,10 +548,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -619,10 +562,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -637,10 +576,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -655,10 +590,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -673,10 +604,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -691,10 +618,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -709,10 +632,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -727,10 +646,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -745,10 +660,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -763,10 +674,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -781,10 +688,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -799,10 +702,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -817,10 +716,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -835,10 +730,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -853,10 +744,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -871,10 +758,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -889,10 +772,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -907,10 +786,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -925,10 +800,6 @@ public class MainActivity extends AppCompatActivity {
                     puan++;
                 }
             }
-            if(puan == 0) TN++;
-            if(puan == 1) FN++;
-            if(puan == 2) FP++;
-            if(puan == 3) TP++;
             if((2*puan)/uzunluklar.length>1){
                 System.out.println("Dogru siniflandirildi, puan = " + puan);
                 return 1;
@@ -971,3 +842,5 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
+
